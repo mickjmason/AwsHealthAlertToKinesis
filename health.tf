@@ -1,6 +1,7 @@
+provider "aws" {}
 
 resource "aws_instance" "test-instance" {
-  ami           = "ami-fcc4db98"
+  ami           = "ami-41e0b93b"
   instance_type = "t2.micro"
   key_name      = "my-key"
 }
@@ -54,7 +55,7 @@ resource "aws_iam_policy" "lambda_exec_policy" {
     },
     {
       "Action": [
-        "sqs:lambda:InvokeFunction"
+        "lambda:InvokeFunction"
       ],
       "Effect": "Allow",
       "Resource": "${aws_lambda_function.sqs_lambda.arn}"
@@ -97,6 +98,13 @@ resource "aws_iam_role" "cloudwatch_kinesis_role" {
       },
       "Effect": "Allow",
       "Sid": ""
+    },
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
     }
   ]
 }
@@ -140,7 +148,7 @@ resource "aws_kinesis_stream" "healthstatus-stream" {
 
 resource "aws_cloudwatch_log_subscription_filter" "health-kinesis-filter" {
   name			= "health-kinesis-filter"
-  role_arn		= "${aws_iam_role.cloudwatch_kinesis_role.name}"
+  role_arn		= "${aws_iam_role.cloudwatch_kinesis_role.arn}"
   log_group_name	= "${aws_cloudwatch_log_group.healthnotifications-loggroup.name}"
   filter_pattern	= ""
   destination_arn	= "${aws_kinesis_stream.healthstatus-stream.arn}"
