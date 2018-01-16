@@ -105,6 +105,13 @@ resource "aws_iam_role" "cloudwatch_kinesis_role" {
         "Service": "lambda.amazonaws.com"
       },
       "Action": "sts:AssumeRole"
+    },
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "logs.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
     }
   ]
 }
